@@ -2,21 +2,21 @@
 
 use yii\helpers\Html;
 
-/**
- * @var yii\web\View $this
- * @var app\models\Categoria $model
- */
 
-$this->title = 'Crear Categoria';
+/* @var $this yii\web\View */
+/* @var $model app\models\Categoria */
+
+$this->title = 'Create Categoria';
 $this->params['breadcrumbs'][] = ['label' => 'Categorias', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="categoria-create col-md-6 col-md-offset-3">
-    <div class="page-header">
-        <h1><?= Html::encode($this->title) ?></h1>
-    </div>
+<div class="categoria-create">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
     <?= $this->render('_form', [
         'model' => $model,
+        'empresa_id' => $empresa_id
     ]) ?>
 
 </div>

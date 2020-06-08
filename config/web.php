@@ -5,18 +5,34 @@ $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'basic',
+    'language' => 'es-ES',
+    // 'sourceLanguage' => 'es-ES',
+    'name' => 'Turnos Desligar.me',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
-    'defaultRoute'=>'cita/index',
+    'defaultRoute'=>'/site/index',
     'components' => [
         'view' => [
             'theme' => [
                 'pathMap' => [
-                    '@dektrium/user/views' => '@app/views/security'
+                    // '@dektrium/user/views' => '@app/views/security',
+                    // '@dektrium/user/views' => '@app/views/security',
+                    '@dektrium/user/views/security' => '@app/views/security',
+                    '@dektrium/user/views/recovery' => '@app/views/recovery',
+                    '@dektrium/user/views/registration' => '@app/views/registration',
+                    '@dektrium/user/views/settings' => '@app/views/settings',
+                    // '@app/views' => '@app/views/layouts/yii2-adminlte-asset/example-views/yiisoft/yii2-app'
+                ],
+            ],
+        ],
+        'assetManager' => [
+            'bundles' => [
+                'dmstr\web\AdminLteAsset' => [
+                    'skin' => 'skin-black',
                 ],
             ],
         ],
@@ -27,6 +43,11 @@ $config = [
             // Use pretty URLs
             'enablePrettyUrl' => true,
             'rules' => [
+                'reservar/<id:\d+>'=>'link/index',
+                '<controller:\w+>/<id:\d+>' => '<controller>/view',
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+                // '/'=>'site/main-index',
             ],
         ],
         'request' => [
@@ -56,14 +77,6 @@ $config = [
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false,
-            // 'transport' => [
-            //     'class' => 'Swift_SmtpTransport',
-            //     'host' => 'smtpout.secureserver.net',
-            //     'username' => 'gerencia@integrarips.com',
-            //     'password' => 'Int3grar"=!(',
-            //     'port' => '465',
-            //     'encryption' => 'tls',
-            // ],
         ],
     ],
     'params' => $params,
@@ -72,7 +85,8 @@ $config = [
             'class' => 'dektrium\user\Module',
             'controllerMap' => [
                 'registration' => [
-                    'class' => \dektrium\user\controllers\RegistrationController::className(),
+                    // 'class' => \dektrium\user\controllers\RegistrationController::className(),
+                    'class' => 'app\controllers\RegistrationController',
                     'on ' . \dektrium\user\controllers\RegistrationController::EVENT_AFTER_REGISTER => function ($e) {
                         Yii::$app->response->redirect(array('/user/security/login'))->send();
                         Yii::$app->end();
@@ -82,11 +96,19 @@ $config = [
             'modelMap' => [
                 'User' => 'app\models\User',
             ],
-            'enableConfirmation' => false
+            'enableConfirmation' => false,
+            'enableRegistration' => true,
+            'enablePasswordRecovery' => true,
+            'admins' => ['santiago'],
         ],
         'rbac' => 'dektrium\rbac\RbacWebModule',
         'gridview' => [
             'class' => 'kartik\grid\Module',
+            'i18n' => [
+                'class' => 'yii\i18n\PhpMessageSource',
+                'basePath' => '@kvgrid/messages',
+                'forceTranslation' => true
+            ]
         ],
         'datecontrol' =>  [
             'class' => 'kartik\datecontrol\Module',
@@ -119,17 +141,23 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        // 'allowedIPs' => ['127.0.0.1', '::1','192.168.0.218'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        // 'allowedIPs' => ['127.0.0.1', '::1','192.168.0.218'],
     ];
     $config['modules']['gii']['generators'] = [
         'kartikgii-crud' => ['class' => 'warrence\kartikgii\crud\Generator'],
+        'crud' => [
+            'class' => 'yii\gii\generators\crud\Generator',
+            'templates' => [
+                'adminlte' => '@vendor/dmstr/yii2-adminlte-asset/gii/templates/crud/simple',
+            ]
+        ]
     ];
 }
 

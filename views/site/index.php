@@ -11,6 +11,12 @@ $this->title = Yii::$app->params['title'];
     </div>
 
     <div class="body-content">
+    <center>
+        <video width="360" height="640" autoplay controls>
+            <source src="/videos/intro.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </center>
 <!-- 
         <div class="row">
             <div class="col-lg-4">

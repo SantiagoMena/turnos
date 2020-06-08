@@ -16,7 +16,7 @@ class EmpresaSearch extends Empresa
     public function rules()
     {
         return [
-            [['id', 'user_id'], 'integer'],
+            [['id', 'usuario_id'], 'integer'],
             [['nombre', 'nit', 'correo', 'telefono', 'direccion', 'logo', 'username'], 'safe'],
         ];
     }
@@ -30,7 +30,7 @@ class EmpresaSearch extends Empresa
     public function search($params)
     {
         $query = Empresa::find()
-                    ->joinWith(['user']);
+                    ->joinWith(['usuario', 'usuario.user']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

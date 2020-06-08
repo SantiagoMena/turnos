@@ -38,8 +38,8 @@ class CitaController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'horarios'],
-                        'roles' => ['empresa', 'secretaria', 'admin'],
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'horarios', 'agenda'],
+                        'roles' => ['empresa', 'administracion', 'admin'],
                     ],
                     [
                         'allow' => true,
@@ -61,6 +61,21 @@ class CitaController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
 
         return $this->render('index', [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+        ]);
+    }
+
+    /**
+     * Lists all Cita models.
+     * @return mixed
+     */
+    public function actionAgenda()
+    {
+        $searchModel = new CitaSearch;
+        $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
+
+        return $this->render('agenda', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
@@ -113,6 +128,7 @@ class CitaController extends Controller
                     $citaHasExamen->save();
                 }
             }
+            $model->enviarMail();
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -159,7 +175,7 @@ class CitaController extends Controller
                     $citaHasExamen->save();
                 }
             }
-
+            $model->enviarMail();
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [

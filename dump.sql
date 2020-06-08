@@ -2,9 +2,9 @@ CREATE DATABASE  IF NOT EXISTS `turnos` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `turnos`;
 -- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --
--- Host: localhost    Database: turnos
+-- Host: 206.189.221.160    Database: turnos
 -- ------------------------------------------------------
--- Server version	5.7.17
+-- Server version	5.7.28-0ubuntu0.16.04.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,6 +16,33 @@ USE `turnos`;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `administracion`
+--
+
+DROP TABLE IF EXISTS `administracion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `administracion` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `empresa_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_secretaria_empresa1_idx` (`empresa_id`),
+  KEY `fk_secretaria_usuario1_idx` (`usuario_id`),
+  CONSTRAINT `fk_secretaria_usuario1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `administracion`
+--
+
+LOCK TABLES `administracion` WRITE;
+/*!40000 ALTER TABLE `administracion` DISABLE KEYS */;
+/*!40000 ALTER TABLE `administracion` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `auth_assignment`
@@ -40,7 +67,7 @@ CREATE TABLE `auth_assignment` (
 
 LOCK TABLES `auth_assignment` WRITE;
 /*!40000 ALTER TABLE `auth_assignment` DISABLE KEYS */;
-INSERT INTO `auth_assignment` VALUES ('admin','21',1538743237),('empresa','14',1538743237),('empresa','24',1538751086),('secretaria','23',1538747290),('secretaria','25',1538751142);
+INSERT INTO `auth_assignment` VALUES ('admin','21',1538743237),('administracion','23',1538747290),('administracion','25',1538751142),('administracion','33',1538757791),('administracion','36',1538974516),('administracion','38',1538974736),('administracion','48',1548935679),('administracion','49',1548936084),('administracion','61',1549684472),('empresa','14',1538743237),('empresa','24',1538751086),('empresa','26',1538754549),('empresa','28',1538754617),('empresa','30',1538754835),('empresa','31',1538754939),('empresa','32',1538757742),('empresa','39',1548811919),('empresa','41',1548812090),('empresa','42',1548905098),('empresa','44',1548935561),('empresa','50',1548938602),('empresa','52',1549592975),('empresa','58',1549595601),('empresa','59',1549595621),('empresa','60',1549684227),('empresa','62',1556509541),('empresa','63',1556894926),('empresa','64',1556986870),('empresa','65',1557002634),('empresa','66',1557029467),('empresa','67',1557031455);
 /*!40000 ALTER TABLE `auth_assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -72,7 +99,7 @@ CREATE TABLE `auth_item` (
 
 LOCK TABLES `auth_item` WRITE;
 /*!40000 ALTER TABLE `auth_item` DISABLE KEYS */;
-INSERT INTO `auth_item` VALUES ('admin',1,NULL,NULL,NULL,1538743063,1538743063),('empresa',1,NULL,NULL,NULL,1538743063,1538743063),('secretaria',1,NULL,NULL,NULL,1538743063,1538743063);
+INSERT INTO `auth_item` VALUES ('admin',1,NULL,NULL,NULL,1538743063,1538743063),('administracion',1,NULL,NULL,NULL,1538743063,1538743063),('empresa',1,NULL,NULL,NULL,1538743063,1538743063);
 /*!40000 ALTER TABLE `auth_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,8 +164,11 @@ DROP TABLE IF EXISTS `categoria`;
 CREATE TABLE `categoria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `empresa_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_categoria_empresa1_idx` (`empresa_id`),
+  CONSTRAINT `fk_categoria_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,68 +177,281 @@ CREATE TABLE `categoria` (
 
 LOCK TABLES `categoria` WRITE;
 /*!40000 ALTER TABLE `categoria` DISABLE KEYS */;
-INSERT INTO `categoria` VALUES (1,'Categoría');
+INSERT INTO `categoria` VALUES (7,'Bicicletas Electricas',18),(8,'Bicicletas Electricas',19),(9,'servicio',20),(10,'Servicios en el punto de venta',22);
 /*!40000 ALTER TABLE `categoria` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `cita`
+-- Table structure for table `config_reserva`
 --
 
-DROP TABLE IF EXISTS `cita`;
+DROP TABLE IF EXISTS `config_reserva`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cita` (
+CREATE TABLE `config_reserva` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fecha` datetime NOT NULL,
+  `tipo` enum('Dias por semana','Rango de dias','Dias en especifico') DEFAULT NULL,
+  `servicio_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`,`servicio_id`),
+  KEY `fk_config_servicio_servicio1_idx` (`servicio_id`),
+  CONSTRAINT `fk_config_servicio_servicio1` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `config_reserva`
+--
+
+LOCK TABLES `config_reserva` WRITE;
+/*!40000 ALTER TABLE `config_reserva` DISABLE KEYS */;
+INSERT INTO `config_reserva` VALUES (6,'Dias por semana',19),(7,'Dias por semana',20),(8,'Dias por semana',21),(9,'Dias por semana',22),(10,'Dias por semana',23);
+/*!40000 ALTER TABLE `config_reserva` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `config_turno`
+--
+
+DROP TABLE IF EXISTS `config_turno`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `config_turno` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `desde` varchar(8) NOT NULL DEFAULT '00:00',
+  `hasta` varchar(8) NOT NULL DEFAULT '23:59',
+  `turno` tinyint(4) DEFAULT '0',
+  `minutos_turno` int(11) DEFAULT NULL,
+  `minutos_entre_turno` int(11) DEFAULT NULL,
+  `cupos` int(11) DEFAULT NULL,
   `empresa_id` int(11) NOT NULL,
-  `cedula` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_config_turno_empresa1_idx` (`empresa_id`),
+  CONSTRAINT `fk_config_turno_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `config_turno`
+--
+
+LOCK TABLES `config_turno` WRITE;
+/*!40000 ALTER TABLE `config_turno` DISABLE KEYS */;
+INSERT INTO `config_turno` VALUES (1,'00:00 AM','00:00 PM',0,30,10,NULL,0),(2,'00:00','23:59',0,60,NULL,2,0),(3,'10:00','23:15',0,240,240,2,0),(4,'10:00','23:59',0,240,240,2,0),(5,'10:00','23:30',0,240,240,2,19),(6,'10:00','17:45',0,30,NULL,NULL,20),(7,'11:00','18:30',0,60,30,4,22),(8,'02:30','18:30',0,30,NULL,NULL,18);
+/*!40000 ALTER TABLE `config_turno` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `configuracion`
+--
+
+DROP TABLE IF EXISTS `configuracion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `configuracion` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `empresa_id` int(11) NOT NULL,
+  `turno_publico` tinyint(4) DEFAULT '1',
+  `cancelar_turno` tinyint(4) DEFAULT '1',
+  `reprogramar_turno` tinyint(4) DEFAULT '1',
+  `correos` text,
+  `adjunto_turno` tinyint(4) DEFAULT '0',
+  `cualquier_horario` tinyint(4) DEFAULT '1',
+  `cualquier_dia` tinyint(4) DEFAULT '1',
+  `dias_especificos` tinyint(4) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fk_configuracion_empresa1_idx` (`empresa_id`),
+  CONSTRAINT `fk_configuracion_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `configuracion`
+--
+
+LOCK TABLES `configuracion` WRITE;
+/*!40000 ALTER TABLE `configuracion` DISABLE KEYS */;
+INSERT INTO `configuracion` VALUES (6,18,1,1,1,NULL,0,1,1,0);
+/*!40000 ALTER TABLE `configuracion` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dato`
+--
+
+DROP TABLE IF EXISTS `dato`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dato` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `documento` varchar(255) DEFAULT NULL,
   `nombre` varchar(255) DEFAULT NULL,
   `telefono` varchar(255) DEFAULT NULL,
   `correo` varchar(255) DEFAULT NULL,
   `cargo` varchar(255) DEFAULT NULL,
-  `documento` varchar(255) DEFAULT NULL,
+  `adjunto` varchar(255) DEFAULT NULL,
+  `turno_id` int(11) NOT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `celular` varchar(255) DEFAULT NULL,
+  `whatsapp` varchar(255) DEFAULT NULL,
+  `pais` varchar(255) DEFAULT NULL,
+  `ciudad` varchar(255) DEFAULT NULL,
+  `localidad` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_cita_empresa1_idx` (`empresa_id`),
-  CONSTRAINT `fk_cita_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  KEY `fk_dato_turno1_idx` (`turno_id`),
+  CONSTRAINT `fk_dato_turno1` FOREIGN KEY (`turno_id`) REFERENCES `turno` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cita`
+-- Dumping data for table `dato`
 --
 
-LOCK TABLES `cita` WRITE;
-/*!40000 ALTER TABLE `cita` DISABLE KEYS */;
-INSERT INTO `cita` VALUES (1,'2018-10-17 00:00:00',1,'test','test','test','test@test.com','test','test'),(2,'2018-10-11 00:00:00',1,'','','','','',''),(3,'2018-10-10 16:30:00',3,'','','','','',''),(4,'2018-10-31 14:25:00',4,'CITA','CITA','CITA','CITA@CITA.com','CITA','CITA');
-/*!40000 ALTER TABLE `cita` ENABLE KEYS */;
+LOCK TABLES `dato` WRITE;
+/*!40000 ALTER TABLE `dato` DISABLE KEYS */;
+INSERT INTO `dato` VALUES (27,'95219474','Santiago Mena','1111111111','santiagomenape@gmail.com',NULL,'',51,NULL,NULL,NULL,NULL,NULL,NULL),(28,'95219474','Santiago Mena','1111111111','santiagomenape@gmail.com',NULL,'',52,NULL,NULL,NULL,NULL,NULL,NULL),(29,'123123','test','1111111111','santiagomenape@gmail.com',NULL,'',53,NULL,NULL,NULL,NULL,NULL,NULL),(30,'111111','Cliente','11111111','cliente@nuevo.com',NULL,'',54,NULL,NULL,NULL,NULL,NULL,NULL),(31,'1111111','Nombre','123456','santiagomenape@gamil.com',NULL,'',55,NULL,NULL,NULL,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `dato` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `cita_has_examen`
+-- Table structure for table `dato_necesario`
 --
 
-DROP TABLE IF EXISTS `cita_has_examen`;
+DROP TABLE IF EXISTS `dato_necesario`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cita_has_examen` (
-  `cita_id` int(11) NOT NULL,
-  `examen_id` int(11) NOT NULL,
-  PRIMARY KEY (`cita_id`,`examen_id`),
-  KEY `fk_cita_has_examen_examen1_idx` (`examen_id`),
-  KEY `fk_cita_has_examen_cita1_idx` (`cita_id`),
-  CONSTRAINT `fk_cita_has_examen_cita1` FOREIGN KEY (`cita_id`) REFERENCES `cita` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_cita_has_examen_examen1` FOREIGN KEY (`examen_id`) REFERENCES `examen` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+CREATE TABLE `dato_necesario` (
+  `config_turno_id` int(11) NOT NULL,
+  `documento` tinyint(4) DEFAULT NULL,
+  `nombre` tinyint(4) DEFAULT NULL,
+  `telefono` tinyint(4) DEFAULT NULL,
+  `correo` tinyint(4) DEFAULT NULL,
+  `cargo` tinyint(4) DEFAULT NULL,
+  `adjunto` tinyint(4) DEFAULT NULL,
+  `direccion` tinyint(4) DEFAULT NULL,
+  `celular` tinyint(4) DEFAULT NULL,
+  `whatsapp` tinyint(4) DEFAULT NULL,
+  `pais` tinyint(4) DEFAULT NULL,
+  `ciudad` tinyint(4) DEFAULT NULL,
+  `localidad` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`config_turno_id`),
+  CONSTRAINT `fk_dato_necesario_config_turno1` FOREIGN KEY (`config_turno_id`) REFERENCES `config_turno` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cita_has_examen`
+-- Dumping data for table `dato_necesario`
 --
 
-LOCK TABLES `cita_has_examen` WRITE;
-/*!40000 ALTER TABLE `cita_has_examen` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cita_has_examen` ENABLE KEYS */;
+LOCK TABLES `dato_necesario` WRITE;
+/*!40000 ALTER TABLE `dato_necesario` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dato_necesario` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dia_especifico_reserva`
+--
+
+DROP TABLE IF EXISTS `dia_especifico_reserva`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dia_especifico_reserva` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `config_turno_id` int(11) DEFAULT NULL,
+  `config_reserva_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_dia_especifico_reserva_config_turno1_idx` (`config_turno_id`),
+  KEY `fk_dia_especifico_reserva_config_reserva1_idx` (`config_reserva_id`),
+  CONSTRAINT `fk_dia_especifico_reserva_config_reserva1` FOREIGN KEY (`config_reserva_id`) REFERENCES `config_reserva` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_dia_especifico_reserva_config_turno1` FOREIGN KEY (`config_turno_id`) REFERENCES `config_turno` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dia_especifico_reserva`
+--
+
+LOCK TABLES `dia_especifico_reserva` WRITE;
+/*!40000 ALTER TABLE `dia_especifico_reserva` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dia_especifico_reserva` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dia_habil`
+--
+
+DROP TABLE IF EXISTS `dia_habil`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dia_habil` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `empresa_id` int(11) NOT NULL,
+  `fecha` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_dia_habil_empresa1_idx` (`empresa_id`),
+  CONSTRAINT `fk_dia_habil_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dia_habil`
+--
+
+LOCK TABLES `dia_habil` WRITE;
+/*!40000 ALTER TABLE `dia_habil` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dia_habil` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dia_habil_has_franja_horaria`
+--
+
+DROP TABLE IF EXISTS `dia_habil_has_franja_horaria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dia_habil_has_franja_horaria` (
+  `dia_habil_id` int(11) NOT NULL,
+  `franja_horaria_id` int(11) NOT NULL,
+  PRIMARY KEY (`dia_habil_id`,`franja_horaria_id`),
+  KEY `fk_dia_habil_has_franja_horaria_franja_horaria1_idx` (`franja_horaria_id`),
+  KEY `fk_dia_habil_has_franja_horaria_dia_habil1_idx` (`dia_habil_id`),
+  CONSTRAINT `fk_dia_habil_has_franja_horaria_dia_habil1` FOREIGN KEY (`dia_habil_id`) REFERENCES `dia_habil` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_dia_habil_has_franja_horaria_franja_horaria1` FOREIGN KEY (`franja_horaria_id`) REFERENCES `franja_horaria` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dia_habil_has_franja_horaria`
+--
+
+LOCK TABLES `dia_habil_has_franja_horaria` WRITE;
+/*!40000 ALTER TABLE `dia_habil_has_franja_horaria` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dia_habil_has_franja_horaria` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dia_turno`
+--
+
+DROP TABLE IF EXISTS `dia_turno`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dia_turno` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `dia` enum('Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo') DEFAULT NULL,
+  `empresa_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_dia_turno_empresa1_idx` (`empresa_id`),
+  CONSTRAINT `fk_dia_turno_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dia_turno`
+--
+
+LOCK TABLES `dia_turno` WRITE;
+/*!40000 ALTER TABLE `dia_turno` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dia_turno` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -226,11 +469,11 @@ CREATE TABLE `empresa` (
   `telefono` varchar(255) DEFAULT NULL,
   `direccion` varchar(255) DEFAULT NULL,
   `logo` varchar(255) DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_empresa_user1_idx` (`user_id`),
-  CONSTRAINT `fk_empresa_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  KEY `fk_empresa_usuario1_idx` (`usuario_id`),
+  CONSTRAINT `fk_empresa_usuario1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -239,35 +482,92 @@ CREATE TABLE `empresa` (
 
 LOCK TABLES `empresa` WRITE;
 /*!40000 ALTER TABLE `empresa` DISABLE KEYS */;
-INSERT INTO `empresa` VALUES (1,'test3','test3','test3@test3.com','test3','test3','test3',12),(2,'test4','test4','test4@test4.com','test4','test4','test4',13),(3,'testrole','testrole','testrole@testrole.com','testrole','testrole','testrole',14),(4,'ips','ips','ips@ips.com','ips','ips','ips',24);
+INSERT INTO `empresa` VALUES (18,'desligar.me',NULL,'quiero@desligar.me',NULL,NULL,'TMCGIPUbB2j7_-fPa0rRbbRkB7xpBdUT.png',63),(19,'Eco Tenderos',NULL,'santiago@contenidos-digitales.com',NULL,NULL,'4e0GxAkk_DgToXdfdIPnLwCy3rFGt35Q.png',64),(20,'daniel',NULL,'danielfmenap@gmail.com',NULL,NULL,'',65),(21,'Empresa Nueva',NULL,'empresa@nueva.com',NULL,NULL,'',66),(22,'Empresa Nueva',NULL,'empresa3@nueva.com',NULL,NULL,'_6FzeWOaTJIme57ZKiM_aJrFepRAtymx.png',67);
 /*!40000 ALTER TABLE `empresa` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `examen`
+-- Table structure for table `franja_horaria`
 --
 
-DROP TABLE IF EXISTS `examen`;
+DROP TABLE IF EXISTS `franja_horaria`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `examen` (
+CREATE TABLE `franja_horaria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(255) DEFAULT NULL,
-  `categoria_id` int(11) NOT NULL,
+  `empresa_id` int(11) NOT NULL,
+  `desde` varchar(8) NOT NULL DEFAULT '00:00 AM',
+  `hasta` varchar(8) NOT NULL DEFAULT '00:00 PM',
+  `tiene_turnos` tinyint(4) DEFAULT '0',
+  `minutos_turno` int(11) DEFAULT '0',
+  `tiene_limpieza` tinyint(4) DEFAULT '0',
+  `tiempo_limpieza` int(11) DEFAULT '0',
+  `cupos` int(11) DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `fk_examen_categoria1_idx` (`categoria_id`),
-  CONSTRAINT `fk_examen_categoria1` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_franja_horaria_empresa1_idx` (`empresa_id`),
+  CONSTRAINT `fk_franja_horaria_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `franja_horaria`
+--
+
+LOCK TABLES `franja_horaria` WRITE;
+/*!40000 ALTER TABLE `franja_horaria` DISABLE KEYS */;
+/*!40000 ALTER TABLE `franja_horaria` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `franja_horaria_has_dia_turno`
+--
+
+DROP TABLE IF EXISTS `franja_horaria_has_dia_turno`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `franja_horaria_has_dia_turno` (
+  `franja_horaria_id` int(11) NOT NULL,
+  `dia_turno_id` int(11) NOT NULL,
+  PRIMARY KEY (`franja_horaria_id`,`dia_turno_id`),
+  KEY `fk_franja_horaria_has_dia_turno_dia_turno1_idx` (`dia_turno_id`),
+  KEY `fk_franja_horaria_has_dia_turno_franja_horaria1_idx` (`franja_horaria_id`),
+  CONSTRAINT `fk_franja_horaria_has_dia_turno_dia_turno1` FOREIGN KEY (`dia_turno_id`) REFERENCES `dia_turno` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_franja_horaria_has_dia_turno_franja_horaria1` FOREIGN KEY (`franja_horaria_id`) REFERENCES `franja_horaria` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `franja_horaria_has_dia_turno`
+--
+
+LOCK TABLES `franja_horaria_has_dia_turno` WRITE;
+/*!40000 ALTER TABLE `franja_horaria_has_dia_turno` DISABLE KEYS */;
+/*!40000 ALTER TABLE `franja_horaria_has_dia_turno` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `link`
+--
+
+DROP TABLE IF EXISTS `link`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `link` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `url` text NOT NULL,
+  `visitas` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `examen`
+-- Dumping data for table `link`
 --
 
-LOCK TABLES `examen` WRITE;
-/*!40000 ALTER TABLE `examen` DISABLE KEYS */;
-INSERT INTO `examen` VALUES (1,'Test',1);
-/*!40000 ALTER TABLE `examen` ENABLE KEYS */;
+LOCK TABLES `link` WRITE;
+/*!40000 ALTER TABLE `link` DISABLE KEYS */;
+INSERT INTO `link` VALUES (1,'http://google.com',4);
+/*!40000 ALTER TABLE `link` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -322,40 +622,161 @@ CREATE TABLE `profile` (
 
 LOCK TABLES `profile` WRITE;
 /*!40000 ALTER TABLE `profile` DISABLE KEYS */;
-INSERT INTO `profile` VALUES (1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(4,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(12,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(13,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(14,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(20,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(22,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(23,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(24,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(25,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `profile` VALUES (21,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(63,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(64,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(65,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(66,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(67,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `profile` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `secretaria`
+-- Table structure for table `rango_reserva`
 --
 
-DROP TABLE IF EXISTS `secretaria`;
+DROP TABLE IF EXISTS `rango_reserva`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `secretaria` (
+CREATE TABLE `rango_reserva` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `empresa_id` int(11) NOT NULL,
-  `nombre` varchar(255) DEFAULT NULL,
-  `telefono` varchar(255) DEFAULT NULL,
-  `correo` varchar(255) NOT NULL,
+  `config_reserva_id` int(11) NOT NULL,
+  `desde` date DEFAULT NULL,
+  `hasta` date DEFAULT NULL,
+  `config_turno_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_secretaria_user1_idx` (`user_id`),
-  KEY `fk_secretaria_empresa1_idx` (`empresa_id`),
-  CONSTRAINT `fk_secretaria_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_secretaria_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  KEY `fk_rango_reserva_config_reserva1_idx` (`config_reserva_id`),
+  KEY `fk_rango_reserva_config_turno1_idx` (`config_turno_id`),
+  CONSTRAINT `fk_rango_reserva_config_reserva1` FOREIGN KEY (`config_reserva_id`) REFERENCES `config_reserva` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_rango_reserva_config_turno1` FOREIGN KEY (`config_turno_id`) REFERENCES `config_turno` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `secretaria`
+-- Dumping data for table `rango_reserva`
 --
 
-LOCK TABLES `secretaria` WRITE;
-/*!40000 ALTER TABLE `secretaria` DISABLE KEYS */;
-INSERT INTO `secretaria` VALUES (1,20,1,'secretaria2','secretaria2','secretaria2@secretaria2.com'),(2,22,3,'secre','secre','secre@secre.com'),(3,23,3,'sec','sec','sec@sec.com'),(4,25,4,'secretariaips','secretariaips','secretariaips@secretariaips.com');
-/*!40000 ALTER TABLE `secretaria` ENABLE KEYS */;
+LOCK TABLES `rango_reserva` WRITE;
+/*!40000 ALTER TABLE `rango_reserva` DISABLE KEYS */;
+/*!40000 ALTER TABLE `rango_reserva` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reserva_turno`
+--
+
+DROP TABLE IF EXISTS `reserva_turno`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `reserva_turno` (
+  `id` int(11) NOT NULL,
+  `desde` datetime DEFAULT NULL,
+  `hasta` varchar(45) DEFAULT NULL,
+  `token` varchar(255) NOT NULL,
+  `estado` enum('Pendiente','Confirmado','Cancelado','Activo','Concluido','Reprogramado','Eliminado') NOT NULL DEFAULT 'Pendiente',
+  `fecha_modificacion` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reserva_turno`
+--
+
+LOCK TABLES `reserva_turno` WRITE;
+/*!40000 ALTER TABLE `reserva_turno` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reserva_turno` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reserva_turno_historial`
+--
+
+DROP TABLE IF EXISTS `reserva_turno_historial`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `reserva_turno_historial` (
+  `version` int(11) NOT NULL,
+  `desde` datetime DEFAULT NULL,
+  `hasta` varchar(45) DEFAULT NULL,
+  `token` varchar(255) NOT NULL,
+  `estado` enum('Pendiente','Confirmado','Cancelado','Activo','Concluido','Reprogramado') NOT NULL DEFAULT 'Pendiente',
+  `fecha_modificacion` datetime DEFAULT NULL,
+  `reserva_turno_id` int(11) NOT NULL,
+  PRIMARY KEY (`version`),
+  KEY `fk_reserva_turno_historial_reserva_turno1_idx` (`reserva_turno_id`),
+  CONSTRAINT `fk_reserva_turno_historial_reserva_turno1` FOREIGN KEY (`reserva_turno_id`) REFERENCES `reserva_turno` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reserva_turno_historial`
+--
+
+LOCK TABLES `reserva_turno_historial` WRITE;
+/*!40000 ALTER TABLE `reserva_turno_historial` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reserva_turno_historial` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `semana_reserva`
+--
+
+DROP TABLE IF EXISTS `semana_reserva`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `semana_reserva` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lunes` tinyint(4) DEFAULT '0',
+  `martes` tinyint(4) DEFAULT '0',
+  `miercoles` tinyint(4) DEFAULT '0',
+  `jueves` tinyint(4) DEFAULT '0',
+  `viernes` tinyint(4) DEFAULT '0',
+  `sabado` tinyint(4) DEFAULT '0',
+  `domingo` tinyint(4) DEFAULT '0',
+  `config_reserva_id` int(11) NOT NULL,
+  `config_turno_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_semana_config_turno1_idx` (`config_turno_id`),
+  KEY `fk_semana_config_reserva1_idx` (`config_reserva_id`),
+  CONSTRAINT `fk_semana_config_reserva1` FOREIGN KEY (`config_reserva_id`) REFERENCES `config_reserva` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_semana_config_turno1` FOREIGN KEY (`config_turno_id`) REFERENCES `config_turno` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `semana_reserva`
+--
+
+LOCK TABLES `semana_reserva` WRITE;
+/*!40000 ALTER TABLE `semana_reserva` DISABLE KEYS */;
+INSERT INTO `semana_reserva` VALUES (2,1,0,1,0,1,0,1,4,2),(3,1,1,1,1,NULL,NULL,NULL,5,3),(4,1,NULL,1,NULL,1,NULL,1,6,4),(5,1,1,1,1,1,NULL,NULL,7,5),(6,1,1,1,1,1,NULL,NULL,8,6),(7,1,1,1,NULL,1,1,NULL,9,7),(8,1,1,1,NULL,NULL,NULL,NULL,10,8);
+/*!40000 ALTER TABLE `semana_reserva` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `servicio`
+--
+
+DROP TABLE IF EXISTS `servicio`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `servicio` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) DEFAULT NULL,
+  `categoria_id` int(11) NOT NULL,
+  `habil_desde` datetime DEFAULT NULL,
+  `habil_hasta` datetime DEFAULT NULL,
+  `siempre_habil` tinyint(4) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `fk_servicio_categoria1_idx` (`categoria_id`),
+  CONSTRAINT `fk_servicio_categoria1` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `servicio`
+--
+
+LOCK TABLES `servicio` WRITE;
+/*!40000 ALTER TABLE `servicio` DISABLE KEYS */;
+INSERT INTO `servicio` VALUES (19,'Alquiler por turnos',7,NULL,NULL,1),(20,'Alquiler por turno',8,NULL,NULL,1),(21,'servicio 1',9,NULL,NULL,1),(22,'Servicio de posventa',10,'2019-05-05 10:30:00','2019-12-23 17:00:00',0),(23,'Servicio nuevo',7,'2019-05-10 01:30:00','2019-05-31 23:30:00',0);
+/*!40000 ALTER TABLE `servicio` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -415,8 +836,42 @@ CREATE TABLE `token` (
 
 LOCK TABLES `token` WRITE;
 /*!40000 ALTER TABLE `token` DISABLE KEYS */;
-INSERT INTO `token` VALUES (21,'CdZwPRwZtQeI6lPtsO4dqn2ohjgyH2K9',1538745092,0);
+INSERT INTO `token` VALUES (21,'CdZwPRwZtQeI6lPtsO4dqn2ohjgyH2K9',1538745092,0),(64,'fbnlJy2ONR0RThJL3Fb1M1AJuLCHGnuH',1557861930,1),(67,'MstIAv0Jpcc_-meMyO4jgSEBnfz4pM6f',1557033331,2);
 /*!40000 ALTER TABLE `token` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `turno`
+--
+
+DROP TABLE IF EXISTS `turno`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `turno` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `token` varchar(255) NOT NULL,
+  `estado` enum('Pendiente','Confirmado','Cancelado','Activo','Concluido','Reprogramado') NOT NULL DEFAULT 'Pendiente',
+  `fecha_modificacion` datetime DEFAULT NULL,
+  `desde` datetime NOT NULL,
+  `hasta` datetime NOT NULL,
+  `servicio_id` int(11) NOT NULL,
+  `empresa_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_turno_servicio1_idx` (`servicio_id`),
+  KEY `fk_turno_empresa1_idx` (`empresa_id`),
+  CONSTRAINT `fk_turno_empresa1` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_turno_servicio1` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `turno`
+--
+
+LOCK TABLES `turno` WRITE;
+/*!40000 ALTER TABLE `turno` DISABLE KEYS */;
+INSERT INTO `turno` VALUES (51,'b4dcb084fd68c82f42cab8048a097fde','Pendiente',NULL,'2019-05-08 18:00:00','2019-05-08 22:00:00',20,19),(52,'c0d986dae8369d3011399ec2677bb8ee','Pendiente',NULL,'2019-05-08 18:00:00','2019-05-08 22:00:00',20,19),(53,'7e109c36202ea8ac19bffdfd7f750705','Pendiente',NULL,'2019-05-06 12:00:00','2019-05-06 12:30:00',21,20),(54,'7bcd5a90220c80e6d8a2146528910829','Pendiente',NULL,'2019-05-21 11:00:00','2019-05-21 12:00:00',22,22),(55,'d76255061665d5498b2c97f003eafc48','Pendiente',NULL,'2019-05-10 10:00:00','2019-05-10 14:00:00',19,18);
+/*!40000 ALTER TABLE `turno` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -443,7 +898,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_unique_username` (`username`),
   UNIQUE KEY `user_unique_email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -452,8 +907,35 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'asa','','$2y$10$flN.tR9BnEjpOvECOAP7uOVCFcsTOalUBHOY85EPVwVxLWsLlpAu.','MtJisrEJowQqMoQNAkTqujoVwWgNyblU',NULL,NULL,NULL,'::1',1538714118,1538714118,0,NULL),(2,'testaaaa','testaaa@test.com','$2y$10$KQZT9Jmbmck3.1VxKfrdremvg7MNC6fkM1TlF490bmJlY8Y5q4SiK','OjMroteKy5yFtO8xVHsccnDfAaUPjef_',NULL,NULL,NULL,'::1',1538714833,1538714833,0,NULL),(3,'test2aaa','test2aaa@test.com','$2y$10$oXAPIgwrTvjrIrV6hC9rLef9v7VzXr9jF/hPNEcYl2LUtJw.2BNaG','sGeoRHFXFZ6Qa-Eq7d6BJ6-1B4-Dmsyg',NULL,NULL,NULL,'::1',1538715073,1538715073,0,NULL),(4,'test2','test2@test.com','$2y$10$6ZXkdzSaWlb7o0vZMSDy5uWD4s3Dj/oWF39bgUxplURNDsIeBS8yG','y3oveHxm4I0PICA3MuO5jvJUMCs2_Sx1',NULL,NULL,NULL,'::1',1538715142,1538715142,0,NULL),(12,'test3','test3@test3.com','$2y$10$SVGEgpxxWCPPu6MeUHCkOOQ4H5pLszpDmSQ6j6wdy549lN/zYS2bW','5JBBIiBjfDAnt8oYivk_8RFg4TatRKjw',NULL,NULL,NULL,'::1',1538715780,1538715780,0,NULL),(13,'test4','test4@test4.com','$2y$10$3udnwlPn3uWz6EglHXEAHuIdIE1AFP8VZMVFt0vIw2lvY4KSE8v7q','NxQVr5yr9P44UEB1i__7nP_GF0i1lFOh',NULL,NULL,NULL,'::1',1538715810,1538715810,0,NULL),(14,'testrole','testrole@testrole.com','$2y$10$NaTGV.42yPP/DyXCLkQOUecMNI6dgCKdM.V4SrDWmRvRGYnjdJkkW','gD0fwcwdR87gDlnIPyBCvmdzpb_x2fUn',NULL,NULL,NULL,'::1',1538743237,1538743237,0,1538748535),(20,'secretaria2','secretaria2@secretaria2.com','$2y$10$BDjlmVpIn1Tg4G42pVx.8.35dXVlglb6Sv5XXcH4JZGXhRBKBjUSK','41BXNLMSMWJY4_-Z7I7x0MP8tHJg2wC3',NULL,NULL,NULL,'::1',1538744591,1538744591,0,1538746991),(21,'santiago','santiagomenape@gmail.com','$2y$10$Z6O/SYErPqdM7hcYHPM3KexJzHs6Jb7PnS.U35JZqC3b5axnrO30q','77gqOYDxjV21Uuot7p3tcJ5W8p1Z8TN2',NULL,NULL,NULL,'::1',1538745092,1538745092,0,1538751597),(22,'secre','secre@secre.com','$2y$10$NuiPSqnGAgslyuzf5gbUAuk3pqGOWYCKaQEWdhyp8n2GKs5eCWN9S','KCZWUwhrNPokRHXydD1DZxh3QoDqdHnD',NULL,NULL,NULL,'::1',1538747110,1538747110,0,1538747118),(23,'sec','sec@sec.com','$2y$10$oy4bBtVe4mdGNHgtzdmNI.GVo1s6WEpqHbq0p77LW6YC9qGaSuqbW','JkjYym_p9RqW7uy6W9YDlwyiY_sg6hbw',NULL,NULL,NULL,'::1',1538747290,1538747290,0,1538750787),(24,'ips','ips@ips.com','$2y$10$LUgvK6nynV0L49qnXFuJEOaEVrvQxZ8snd3leHKO872/qM0/uHaSS','UO8rBwmIHGMhcKv7dP58pw3J1XJlFErJ',NULL,NULL,NULL,'::1',1538751086,1538751086,0,1538751095),(25,'secretariaips','secretariaips@secretariaips.com','$2y$10$1xufQowFgztL5T/NQU6CpOG3HGL5rJjFo0MSVWjvwoyEOul0zLMhu','YtiQxKfSpZVWEkDfYK2zSnwEobdLmY6w',NULL,NULL,NULL,'::1',1538751142,1538751142,0,1538751149);
+INSERT INTO `user` VALUES (21,'santiago','santiagomenape@gmail.com','$2y$10$Z6O/SYErPqdM7hcYHPM3KexJzHs6Jb7PnS.U35JZqC3b5axnrO30q','77gqOYDxjV21Uuot7p3tcJ5W8p1Z8TN2',NULL,NULL,NULL,'::1',1538745092,1538745092,0,1571004582),(63,'desligar.me','quiero@desligar.me','$2y$10$KYJy9Luw8JySxhKGdjRwmOpsdO/WPhJjbr.wIT9WON8Jx3d3wWc/.','0YVxx1_OSDwtAR17x48Ob31htNpP3fje',NULL,NULL,NULL,'190.194.175.20',1556894926,1556894926,0,1589488209),(64,'ecotenderos','santiago@contenidos-digitales.com','$2y$10$JlN1U69iEOcejzdjIIu6juRmwTlnbvufsE4zNMHZRRgmVb8pXA1sO','26Q4TdNiPDpiGTp3HCucDT0TIYPi7MOj',1556986868,NULL,NULL,'190.194.175.20',1556986869,1556986869,0,1556986883),(65,'daniel','danielfmenap@gmail.com','$2y$10$mMGXNBlWErK7Lr4tC/AyROUePaWkzuP3HBNM9rtsYsVv/wTP1RmFq','5iW02pNEAzhfeIHPuoSyu97FLz7fPzgc',1557002632,NULL,NULL,'190.194.175.20',1557002632,1557002632,0,1557002644),(66,'empresanueva','empresa@nueva.com','$2y$10$oYnyk0jGT/D7TQ8OrN4w5.Zc0XCIPFlgfG/HyjL/Sv6r9EvUkyGoG','7NRnnLWbmQ6g34vGkVgT1IADTDAvQhM0',1557029465,NULL,NULL,'190.194.175.20',1557029465,1557029465,0,1557029479),(67,'empresatres','empresa3@nueva.com','$2y$10$x1e.MDABaj1NPi6cJzejAeeb6xBPyhbN1Gr5tzFJq8IqIDpKFSzQe','F9w2lFQ8OfPBlNPMsSF16fuR9uX4N-Qa',1557031453,'empresatres@nueva.com',NULL,'190.194.175.20',1557031454,1557033333,0,1557031460);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuario`
+--
+
+DROP TABLE IF EXISTS `usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usuario` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) DEFAULT NULL,
+  `telefono` varchar(255) DEFAULT NULL,
+  `correo` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_usuario_user1` FOREIGN KEY (`id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuario`
+--
+
+LOCK TABLES `usuario` WRITE;
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` VALUES (63,NULL,NULL,'quiero@desligar.me'),(64,NULL,NULL,'santiago@contenidos-digitales.com'),(65,NULL,NULL,'danielfmenap@gmail.com'),(66,NULL,NULL,'empresa@nueva.com'),(67,NULL,NULL,'empresa3@nueva.com');
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -465,4 +947,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-10-05 12:40:52
+-- Dump completed on 2020-06-08 16:19:47

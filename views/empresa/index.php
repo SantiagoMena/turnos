@@ -25,13 +25,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php Pjax::begin(); echo GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        // 'filterModel' => $searchModel,
         'emptyText' => 'No se encontraron resultados.',
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             // 'id',
-            ['attribute'=>'username', 'value' => 'user.username'],
+            [
+                'attribute'=>'username', 
+                'value' => 'usuario.user.username'],
             'nombre',
             'nit',
             'correo',
@@ -41,15 +43,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
+                'header' => 'Acciones',
                 'buttons' => [
-                    'update' => function ($url, $model) {
+                    'configurar' => function ($url, $model) {
                         return Html::a('<span class="glyphicon glyphicon-pencil"></span>',
-                            Yii::$app->urlManager->createUrl(['empresa/view', 'id' => $model->id, 'edit' => 't']),
-                            ['title' => Yii::t('yii', 'Editar'),]
+                            Yii::$app->urlManager->createUrl(['empresa/configurar', 'id' => $model->id, 'edit' => 't']),
+                            ['title' => Yii::t('yii', 'Configurar'),]
                         );
-                    }
+                    },
                 ],
+                'template'=>'{configurar} {view} {delete}'
             ],
+            // [
+            //     'class' => 'yii\grid\ActionColumn',
+            //     'buttons' => [
+            //         'update' => function ($url, $model) {
+            //             return Html::a('<span class="glyphicon glyphicon-pencil"></span>',
+            //                 Yii::$app->urlManager->createUrl(['empresa/view', 'id' => $model->id, 'edit' => 't']),
+            //                 ['title' => Yii::t('yii', 'Editar'),]
+            //             );
+            //         }
+            //     ],
+            // ],
         ],
         'responsive' => true,
         'hover' => true,

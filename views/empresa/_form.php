@@ -27,13 +27,13 @@ use kartik\file\FileInput;
 
             'nombre' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Nombre...', 'maxlength' => 255]],
 
-            'nit' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Nit...', 'maxlength' => 255]],
+            // 'nit' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Nit...', 'maxlength' => 255]],
 
             'correo' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Correo...', 'maxlength' => 255]],
 
-            'telefono' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Telefono...', 'maxlength' => 255]],
+            // 'telefono' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Telefono...', 'maxlength' => 255]],
 
-            'direccion' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Direccion...', 'maxlength' => 255]],
+            // 'direccion' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Ingrese Direccion...', 'maxlength' => 255]],
 
             // 'logo' => ['type' => Form::INPUT_TEXT, 'options' => ['placeholder' => 'Enter Logo...', 'maxlength' => 255]],
 

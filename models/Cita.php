@@ -34,7 +34,7 @@ class Cita extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'cita';
+        return 'turno';
     }
 
     /**
@@ -161,7 +161,18 @@ class Cita extends \yii\db\ActiveRecord
         return Cita::find()->where(['fecha' => date('Y-m-d H:i:s', strtotime($fecha))])->one() ? TRUE : FALSE;
     }
 
-    public function afterSave ( $insert, $changedAttributes ){
+    public function getExamenes(){
+        $cita = Cita::find()
+            ->where(['cita.id'=>$this->id])
+            ->innerJoin('empresa','empresa.id = cita.empresa_id')
+            ->leftJoin('cita_has_examen','cita_has_examen.cita_id = cita.id')
+            ->innerJoin('examen', 'examen.id = cita_has_examen.examen_id')
+            ->select(['cita.id',"GROUP_CONCAT(examen.nombre SEPARATOR ', ') as examenes"])
+            ->groupBy('cita.id')
+            ->one();
+        return $cita ? $cita->examenes : NULL;
+    }
+    public function enviarMail (){
         $mail_to = Yii::$app->params['secretariaEmail'];
         if($this->correo)
             $mail_to = array_merge($mail_to, [$this->correo]);
@@ -172,6 +183,7 @@ class Cita extends \yii\db\ActiveRecord
             $msj = "La empresa $empresa a agendado una cita para el empleado $this->nombre el día $dia a la hora $hora
                     <br>Empresa: $empresa
                     <br>Empleado: $this->nombre
+                    <br>Examenes: ".$this->getExamenes()."
                     <br>Fecha: $dia
                     <br>Hora: $hora
                     ";
@@ -184,6 +196,30 @@ class Cita extends \yii\db\ActiveRecord
         // ...custom code here...
         return true;
     }
+    // public function afterSave ( $insert, $changedAttributes ){
+    //     $mail_to = Yii::$app->params['secretariaEmail'];
+    //     if($this->correo)
+    //         $mail_to = array_merge($mail_to, [$this->correo]);
+
+    //         $dia = date('Y-m-d', strtotime($this->fecha));
+    //         $hora = date('H:i:s', strtotime($this->fecha));
+    //         $empresa = Empresa::findOne($this->empresa_id)->nombre;
+    //         $msj = "La empresa $empresa a agendado una cita para el empleado $this->nombre el día $dia a la hora $hora
+    //                 <br>Empresa: $empresa
+    //                 <br>Empleado: $this->nombre
+    //                 <br>Examenes: ".$this->getExamenes()."
+    //                 <br>Fecha: $dia
+    //                 <br>Hora: $hora
+    //                 ";
+    //     Yii::$app->mailer->compose()
+    //     ->setSubject('Nuevo Turno Agendado')
+    //     ->setHtmlBody($msj)
+    //     ->setFrom('citas@integrarips.com')
+    //     ->setTo($mail_to)
+    //     ->send();
+    //     // ...custom code here...
+    //     return true;
+    // }
     public function beforeDelete(){
         if (!parent::beforeDelete()) {
             return false;
@@ -198,6 +234,7 @@ class Cita extends \yii\db\ActiveRecord
             $msj = "La empresa $empresa a cancelado una cita para el empleado $this->nombre el día $dia a la hora $hora
                     <br>Empresa: $empresa
                     <br>Empleado: $this->nombre
+                    <br>Examenes: ".$this->getExamenes()."
                     <br>Fecha: $dia
                     <br>Hora: $hora
                     ";
@@ -214,4 +251,5 @@ class Cita extends \yii\db\ActiveRecord
     public function getCitasPendientes(){
         return Cita::find()->where(['date(fecha)' => date('Y-m-d', strtotime('YESTERDAY'))])->all();
     }
+
 }

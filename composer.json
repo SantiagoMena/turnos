@@ -22,7 +22,8 @@
         "warrence/yii2-kartikgii": "dev-master",
         "dektrium/yii2-user": "^0.9.14",
         "dektrium/yii2-rbac": "1.0.0-alpha@dev",
-        "kartik-v/yii2-widget-fileinput": "dev-master"
+        "kartik-v/yii2-widget-fileinput": "dev-master",
+	"kartik-v/yii2-checkbox-x": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

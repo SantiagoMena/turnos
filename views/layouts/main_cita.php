@@ -5,6 +5,7 @@
 
 use app\widgets\Alert;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
@@ -30,16 +31,16 @@ AppAsset::register($this);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode( Yii::$app->params['title'] ) ?></title>
-    <link rel="icon" href="http://integrarips.com/assets/img/icon.ico">
+    <link rel="icon" href="<?= Url::to('@web/favicon.ico') ?>">
     <?php $this->head() ?>
 </head>
-<body>
+<body >
 <?php $this->beginBody() ?>
 
 <div class="wrap background-citas">
     <?php
     NavBar::begin([
-        'brandLabel' =>  Html::img('@web/images/logo.png', ['alt' => Yii::$app->params['name'], 'class' => "img-responsive"])/* . Yii::$app->params['name']*/,
+        'brandLabel' =>  User::getLogo(),
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -48,18 +49,25 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Categorias', 'url' => ['/categoria/index'], 'visible'=>isRol('admin')],
-            ['label' => 'Examenes', 'url' => ['/examen/index'], 'visible'=>isRol('admin')],
-            ['label' => 'Citas', 'url' => ['/cita/index'], 'visible'=>isRol('secretaria') || isRol('admin') || isRol('empresa')],
+            ['label' => 'Empresa', 'url' => ['/empresa/configurar', 'id'=>User::getEmpresa()], 'visible'=> isRol('empresa') && User::getEmpresa()],
+            ['label' => 'Categorias', 'url' => ['/categoria/index'], 'visible'=>isRol('empresa')],
+            ['label' => 'Servicios', 'url' => ['/servicio/index'], 'visible'=>isRol('empresa')],
+            ['label' => 'Crear Turno', 'url' => ['/turno/create'], 'visible'=>isRol('administracion') || isRol('empresa')],
+            ['label' => 'Turnos', 'url' => ['/turno/agenda'], 'visible'=>isRol('administracion') || isRol('empresa')],
             ['label' => 'Empresas', 'url' => ['/empresa/index'], 'visible'=>isRol('admin')],
-            ['label' => 'Secreataria', 'url' => ['/secretaria/index'], 'visible'=>false],
+            // ['label' => 'Administracion', 'url' => ['/administracion/index'], 'visible'=>isRol('empresa')],
             Yii::$app->user->isGuest ? (
-                ['label' => 'Ingresar', 'url' => ['user/login'], 'visible'=>false]
+                ['label' => 'Cofign', 'url' => [], 'visible'=>false]
+            ) : (
+                '<li>'.Html::a('<span class="glyphicon glyphicon-wrench"></span>', Yii::$app->urlManager->createUrl(['/user/settings/account'])).'</li>'
+            ),
+            Yii::$app->user->isGuest ? (
+                ['label' => 'Ingresar', 'url' => ['/user/login'], 'visible'=>false]
             ) : (
                 '<li>'
-                . Html::beginForm(['user/security/logout'], 'post')
+                . Html::beginForm(['/user/security/logout'], 'post')
                 . Html::submitButton(
-                    'Salir (' . Yii::$app->user->identity->username . ')',
+                    '(' . Yii::$app->user->identity->username . ') Salir',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()
@@ -80,6 +88,7 @@ AppAsset::register($this);
         <?= $content ?>
     </div>
 </div>
+<div class="clearfix"></div>
 
 <footer class="footer">
     <div class="container">

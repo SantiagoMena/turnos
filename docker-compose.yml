@@ -1,9 +1,44 @@
-version: '2'
+version: "3.1"
 services:
-  php:
-    image: yiisoftware/yii2-php:7.1-apache
-    volumes:
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      - ./:/app:delegated
-    ports:
-      - '8000:80'
+
+    mysql:
+      image: mysql:5.7
+      container_name: turnos-desligar-me-mysql
+      working_dir: /application
+      volumes:
+        - .:/application
+      environment:
+        - MYSQL_ROOT_PASSWORD=turnos
+        - MYSQL_DATABASE=turnos
+        - MYSQL_USER=turnos
+        - MYSQL_PASSWORD=turnos
+      ports:
+        - "1027:3306"
+
+    mysqlinit:
+      image: mysql:5.7
+      volumes:
+        - ./dump.sql:/dump/dump.sql
+      command: bash -c "sleep 20 && cat /dump/dump.sql | mysql -h mysql -uturnos -pturnos turnos"
+
+    webserver:
+      image: nginx:alpine
+      container_name: turnos-desligar-me-webserver
+      working_dir: /application
+      volumes:
+          - .:/application
+          - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "80:80"
+      links:
+       - mysql
+       - php-fpm
+
+    php-fpm:
+      build: phpdocker/php-fpm
+      container_name: turnos-desligar-me-php-fpm
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+

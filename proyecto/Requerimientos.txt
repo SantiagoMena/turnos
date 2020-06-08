@@ -1,0 +1,55 @@
+Turnos:
+
+Interesados:
+
+
+Que hay realizados V1:
+    Entidades:
+        Empresas
+        Administración
+        Clientes
+        Super Admin (¿?)
+
+    Funcionalidades existentes:
+        Registro de nuevas Empresas
+        Registro de Administración para gestión de turnos
+        Envio de mails de alerta 2 horas ates
+        Adjuntar archivos al turno
+        Cambio de estado ('Pendiente', 'Confirmado', 'Cancelado', 'Activo', 'Concluido', 'Reprogramado')
+
+    Errores:
+
+
+Que quiero para mejorar la V1:
+
+1 Desarrollo
+
+    1.1 Servicios
+        1.1.1 Edición de servicios (agregar un botón)
+        1.1.2 Papelera de servicios
+
+    1.2 Empresas
+        1.2.1 Registro automatico de Empresas
+        1.2.2 Sistema de pagos por uso (Paypal / MercadoPago / ...)
+        1.2.3 Configuración 
+            1.2.3.1 Ingresar periodos de aviso sobre turnos proximos
+            1.2.3.2 Mails a los que la empresa quieren que llegue información sobre turnos (nuevos / cancelaciones / lista de turnos para el proximo día)
+            1.2.3.3 Campos custom para el cliente (Con tipos: fecha / numeros / cadena de texto)
+
+    1.3 Turnos
+        1.3.1 Dashboar de turnos en tiempo real (Proximos turnos, turnos pasados)
+        1.3.2 Acceso a clientes para modificar / cancelar / re    programar turnos
+        1.3.3 Emal por acada estado del turno ('Pendiente', 'Confirmado', 'Cancelado', 'Activo', 'Concluido', 'Reprogramado')
+
+2 Diseño
+    2.1 Web
+        2.1.1 Template
+        2.1.2 Plantilla de Emails
+
+3 Testing
+    3.1 Crear entorno de pruebas
+        3.1.1 Duplicar base de datos
+        3.1.2 Crear subdominio para pruebas
+
+
+Que espero de la V2:

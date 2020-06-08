@@ -9,8 +9,10 @@ use Yii;
  *
  * @property int $id
  * @property string $nombre
+ * @property int $empresa_id
  *
- * @property Examen[] $examens
+ * @property Empresa $empresa
+ * @property Servicio[] $servicios
  */
 class Categoria extends \yii\db\ActiveRecord
 {
@@ -28,7 +30,10 @@ class Categoria extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['empresa_id'], 'required'],
+            [['empresa_id'], 'integer'],
             [['nombre'], 'string', 'max' => 255],
+            [['empresa_id'], 'exist', 'skipOnError' => true, 'targetClass' => Empresa::className(), 'targetAttribute' => ['empresa_id' => 'id']],
         ];
     }
 
@@ -40,14 +45,23 @@ class Categoria extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'nombre' => 'Nombre',
+            'empresa_id' => 'Empresa ID',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getExamens()
+    public function getEmpresa()
     {
-        return $this->hasMany(Examen::className(), ['categoria_id' => 'id']);
+        return $this->hasOne(Empresa::className(), ['id' => 'empresa_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getServicios()
+    {
+        return $this->hasMany(Servicio::className(), ['categoria_id' => 'id']);
     }
 }

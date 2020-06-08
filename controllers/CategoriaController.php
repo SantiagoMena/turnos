@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Categoria;
+use app\models\Empresa;
 use app\models\CategoriaSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -33,8 +34,8 @@ class CategoriaController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'horarios'],
-                        'roles' => ['admin'],
+                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'roles' => ['empresa', 'administracion'],
                     ],
                 ],
             ],
@@ -47,12 +48,12 @@ class CategoriaController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new CategoriaSearch;
-        $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
+        $searchModel = new CategoriaSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -60,16 +61,18 @@ class CategoriaController extends Controller
      * Displays a single Categoria model.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('view', ['model' => $model]);
-        }
+    function isRol($rol){
+        $user_id =Yii::$app->user->id;
+        return in_array($rol, array_keys(\Yii::$app->authManager->getRolesByUser($user_id)));
     }
 
     /**
@@ -79,15 +82,28 @@ class CategoriaController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Categoria;
+        $model = new Categoria();
+        $data = Yii::$app->request->post();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if($this->isRol('administracion'))
+        $empresa_id = Administracion::find()->where(['usuario_id' => Yii::$app->user->id])->one()->empresa_id;
+        if($this->isRol('empresa'))
+            $empresa_id = Empresa::find()->where(['usuario_id' => Yii::$app->user->id])->one()->id;
+        if($this->isRol('admin'))
+            $empresa_id = $data['Categoria']['empresa_id'];
+
+        if(isset($data['Categoria'])){
+            $data['Categoria']['empresa_id'] = $empresa_id;
         }
+
+        if ($model->load($data) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'empresa_id' => $empresa_id
+        ]);
     }
 
     /**
@@ -95,6 +111,7 @@ class CategoriaController extends Controller
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionUpdate($id)
     {
@@ -102,11 +119,11 @@ class CategoriaController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
         }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -114,6 +131,7 @@ class CategoriaController extends Controller
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionDelete($id)
     {
@@ -133,8 +151,8 @@ class CategoriaController extends Controller
     {
         if (($model = Categoria::findOne($id)) !== null) {
             return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
         }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

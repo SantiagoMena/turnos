@@ -39,7 +39,7 @@ class ExamenController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['get'],
-                        'roles' => ['admin', 'secretaria', 'empresa'],
+                        'roles' => ['admin', 'administracion', 'empresa'],
                     ],
                 ],
             ],

@@ -1,62 +1,53 @@
 <?php
 
 use yii\helpers\Html;
-use kartik\grid\GridView;
-use yii\widgets\Pjax;
+use yii\grid\GridView;
 
-/**
- * @var yii\web\View $this
- * @var yii\data\ActiveDataProvider $dataProvider
- * @var app\models\CategoriaSearch $searchModel
- */
+/* @var $this yii\web\View */
+/* @var $searchModel app\models\CategoriaSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Categorias';
+$this->title = 'Categorías';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="categoria-index">
-    <div class="page-header">
-        <h1><?= Html::encode($this->title) ?></h1>
-    </div>
+
+    <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?php /* echo Html::a('Create Categoria', ['create'], ['class' => 'btn btn-success'])*/  ?>
+        <?= Html::a('Crear Categoría', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php Pjax::begin(); echo GridView::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        // 'filterModel' => $searchModel,
         'emptyText' => 'No se encontraron resultados.',
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            // ['class' => 'yii\grid\SerialColumn'],
 
             // 'id',
-            'nombre',
+            [
+                'attribute' => 'nombre',
+                'filter' => false,
+            ],
 
             [
                 'class' => 'yii\grid\ActionColumn',
+                'header' => 'Acciones',
+                'template' => '{view} {update} {delete}',
                 'buttons' => [
-                    'update' => function ($url, $model) {
-                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>',
-                            Yii::$app->urlManager->createUrl(['categoria/view', 'id' => $model->id, 'edit' => 't']),
-                            ['title' => Yii::t('yii', 'Edit'),]
-                        );
+                    'delete' => function($url, $model){
+                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['delete', 'id' => $model->id], [
+                            'class' => '',
+                            'data' => [
+                                'confirm' => '¿Está seguro de eliminar la categoría: '.$model->nombre.'?',
+                                'method' => 'post',
+                            ],
+                        ]);
                     }
-                ],
+                ]
             ],
         ],
-        'responsive' => true,
-        'hover' => true,
-        'condensed' => true,
-        'floatHeader' => true,
-
-        'panel' => [
-            'heading' => '<h3 class="panel-title"><i class="glyphicon glyphicon-th-list"></i> '.Html::encode($this->title).' </h3>',
-            'type' => 'info',
-            'before' => Html::a('<i class="glyphicon glyphicon-plus"></i> Agregar', ['create'], ['class' => 'btn btn-success']),
-            'after' => Html::a('<i class="glyphicon glyphicon-repeat"></i> Limpiar Lista', ['index'], ['class' => 'btn btn-info']),
-            'showFooter' => false
-        ],
-    ]); Pjax::end(); ?>
-
+    ]); ?>
 </div>

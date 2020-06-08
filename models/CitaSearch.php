@@ -37,9 +37,9 @@ class CitaSearch extends Cita
             return in_array($rol, array_keys(\Yii::$app->authManager->getRolesByUser($user_id)));
         }
         if(isRol('secretaria'))
-            $empresa_id = Secretaria::find()->where(['user_id' => Yii::$app->user->id])->one()->empresa_id;
+            $empresa_id = Secretaria::find()->where(['usuario_id' => Yii::$app->user->id])->one()->empresa_id;
         if(isRol('empresa'))
-            $empresa_id = Empresa::find()->where(['user_id' => Yii::$app->user->id])->one()->id;
+            $empresa_id = Empresa::find()->where(['usuario_id' => Yii::$app->user->id])->one()->id;
         if(!isRol('admin'))
             $query->where(['empresa_id'=>$empresa_id]);
         // $query->with(['empresa']);
