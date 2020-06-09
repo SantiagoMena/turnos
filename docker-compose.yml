@@ -35,12 +35,12 @@ services:
        - php-fpm
 
     php-fpm:
-      build: phpdocker/php-fpm
+      build: 
+        dockerfile: phpdocker/php-fpm/Dockerfile
+        context: ./
       container_name: turnos-desligar-me-php-fpm
       working_dir: /application
       volumes:
-        - .:/application
         - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
       links:
-       - mysql
-
+        - mysql

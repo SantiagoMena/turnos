@@ -13,3 +13,11 @@ RUN apt-get update \
 RUN apt-get update \
     && apt-get -y install git \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
+# Install Composer
+RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
+
+# Composer install
+ADD . /application
+RUN cd /application && composer install --optimize-autoloader && \
+    composer clear-cache && chown www-data:www-data ./web/assets
