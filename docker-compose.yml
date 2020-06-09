@@ -1,13 +1,11 @@
 version: "3.1"
 services:
-
     mysql:
       image: mysql:5.7
       container_name: turnos-desligar-me-mysql
       working_dir: /application
       volumes:
-        - ./dump.sql:/application/dump.sql
-      command: bash -c "cd application && cat dump.sql | mysql -h mysql -uturnos -pturnos turnos"
+        - .:/application
       environment:
         - MYSQL_ROOT_PASSWORD=turnos
         - MYSQL_DATABASE=turnos
@@ -15,6 +13,19 @@ services:
         - MYSQL_PASSWORD=turnos
       ports:
         - "8101:3306"
+      networks:
+          - app-network
+
+    mysqlinit:
+      image: mysql:5.7
+      container_name: turnos-desligar-me-mysqlinit
+      volumes:
+        - ./dump.sql:/application/dump.sql
+      command: bash -c "sleep 30 && cat /application/dump.sql | mysql -h mysql -uturnos -pturnos turnos"
+      links:
+        - mysql
+      networks:
+          - app-network
 
     webserver:
       image: nginx:alpine
@@ -28,6 +39,8 @@ services:
       links:
        - mysql
        - php-fpm
+      networks:
+          - app-network
 
     php-fpm:
       build: 
@@ -39,3 +52,8 @@ services:
         - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
       links:
         - mysql
+      networks:
+          - app-network
+networks:
+  app-network:
+    driver: bridge
