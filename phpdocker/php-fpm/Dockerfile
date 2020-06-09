@@ -11,7 +11,7 @@ RUN apt-get update \
 
 # Install git
 RUN apt-get update \
-    && apt-get -y install git \
+    && apt-get -y install git mysql-client \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Install Composer
@@ -19,5 +19,7 @@ RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-di
 
 # Composer install
 ADD . /application
-RUN cd /application && composer install --optimize-autoloader && \
-    composer clear-cache && chown www-data:www-data ./web/assets
+RUN cd /application &&  \
+    composer install --optimize-autoloader && \
+    composer clear-cache &&  \
+    chown www-data:www-data ./web/assets

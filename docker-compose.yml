@@ -6,20 +6,15 @@ services:
       container_name: turnos-desligar-me-mysql
       working_dir: /application
       volumes:
-        - .:/application
+        - ./dump.sql:/application/dump.sql
+      command: bash -c "cd application && cat dump.sql | mysql -h mysql -uturnos -pturnos turnos"
       environment:
         - MYSQL_ROOT_PASSWORD=turnos
         - MYSQL_DATABASE=turnos
         - MYSQL_USER=turnos
         - MYSQL_PASSWORD=turnos
       ports:
-        - "1027:3306"
-
-    mysqlinit:
-      image: mysql:5.7
-      volumes:
-        - ./dump.sql:/dump/dump.sql
-      command: bash -c "sleep 20 && cat /dump/dump.sql | mysql -h mysql -uturnos -pturnos turnos"
+        - "8101:3306"
 
     webserver:
       image: nginx:alpine
@@ -29,7 +24,7 @@ services:
           - .:/application
           - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       ports:
-       - "1070:80"
+       - "8001:80"
       links:
        - mysql
        - php-fpm
