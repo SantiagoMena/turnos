@@ -29,7 +29,7 @@ services:
           - .:/application
           - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       ports:
-       - "80:80"
+       - "1070:80"
       links:
        - mysql
        - php-fpm
@@ -41,4 +41,6 @@ services:
       volumes:
         - .:/application
         - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+      links:
+       - mysql
 
