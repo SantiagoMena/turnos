@@ -160,8 +160,8 @@ class TurnoController extends Controller
         if($data['Turno']){
             if(isset($data['Turno']['horario'])){
                 $fechas = explode(',', $data['Turno']['horario']);
-                $data['Turno']['desde'] = date('Y-m-d H:i:s', strtotime($fechas[0]));
-                $data['Turno']['hasta'] = date('Y-m-d H:i:s', strtotime($fechas[1]));
+                $data['Turno']['desde'] = date('Y-m-d H:i:s', strtotime(str_replace('1970-01-01', $data['Turno']['fecha'], $fechas[0])));
+                $data['Turno']['hasta'] = date('Y-m-d H:i:s', strtotime(str_replace('1970-01-01', $data['Turno']['fecha'], $fechas[1])));
                 $data['Turno']['token'] = md5(time());
             } else {
                 throw new NotFoundHttpException('The requested page does not exist.');
@@ -366,8 +366,8 @@ class TurnoController extends Controller
         if($data['Turno']){
             if(isset($data['Turno']['horario'])){
                 $fechas = explode(',', $data['Turno']['horario']);
-                $data['Turno']['desde'] = date('Y-m-d H:i:s', strtotime($fechas[0]));
-                $data['Turno']['hasta'] = date('Y-m-d H:i:s', strtotime($fechas[1]));
+                $data['Turno']['desde'] = date('Y-m-d H:i:s', strtotime(str_replace('1970-01-01', $data['Turno']['fecha'], $fechas[0])));
+                $data['Turno']['hasta'] = date('Y-m-d H:i:s', strtotime(str_replace('1970-01-01', $data['Turno']['fecha'], $fechas[1])));
                 $data['Turno']['token'] = md5(time());
             } else {
                 throw new NotFoundHttpException('The requested page does not exist.');
